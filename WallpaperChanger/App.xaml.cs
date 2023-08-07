@@ -16,7 +16,7 @@ namespace WallpaperChanger
         private System.Windows.Forms.ContextMenuStrip? _menu = null;
         //常駐終了時に開放するために保存しておく
         private System.Windows.Forms.NotifyIcon? _notifyIcon = null;
-        private WallpaperService _service = new WallpaperService();
+        private WallpaperService _service = WallpaperService.GetInstance();
         /// <summary>
         /// 常駐開始時の初期化処理
         /// </summary>
@@ -101,7 +101,7 @@ namespace WallpaperChanger
         /// <returns></returns>
         private ContextMenuStrip CreateMenu()
         {
-            var menu = new System.Windows.Forms.ContextMenuStrip();
+            var menu = new ContextMenuStrip();
             menu.Items.Add("各種設定", null, (s, e) => { ShowMainWindow(); });
             menu.Items.Add($"{System.Diagnostics.Process.GetCurrentProcess().ProcessName}を終了", null, (s, e) => { Shutdown(); });
             return menu;
