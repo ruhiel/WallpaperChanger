@@ -8,8 +8,8 @@ namespace WallpaperChanger.Model
 {
     public class CircularCounter
     {
-        private int maxValue;
-        private int currentValue;
+        public int MaxValue { get; set; }
+        private int _CurrentValue;
 
         public CircularCounter(int maxValue)
         {
@@ -18,14 +18,14 @@ namespace WallpaperChanger.Model
                 throw new ArgumentException("The maximum value must be greater than zero.");
             }
 
-            this.maxValue = maxValue;
-            this.currentValue = 0;
+            MaxValue = maxValue;
+            _CurrentValue = 0;
         }
 
         public int GetCounter()
         {
-            int result = currentValue;
-            currentValue = (currentValue + 1) % maxValue;
+            int result = _CurrentValue;
+            _CurrentValue = (_CurrentValue + 1) % MaxValue;
             return result;
         }
     }

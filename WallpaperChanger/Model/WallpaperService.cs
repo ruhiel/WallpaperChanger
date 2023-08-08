@@ -15,10 +15,23 @@ namespace WallpaperChanger.Model
 
         private Timer _Timer = new Timer(30000);
         private CircularCounter? _CircularCounter;
-        public string[] Path { get; set; } = new string[0];
-
+        public string[] _Path = new string[0];
         private WallpaperService()
         {
+        }
+
+        public string[] Path 
+        {
+            get { return _Path; }
+            set
+            {
+                if (_CircularCounter is not null)
+                {
+                    _CircularCounter.MaxValue = value.Length;
+                }
+
+                _Path = value;
+            }
         }
 
         // インスタンスの取得はstaticプロパティもしくはstaticメソッドから行えるようにする
