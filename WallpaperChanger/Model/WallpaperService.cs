@@ -11,7 +11,7 @@ namespace WallpaperChanger.Model
     public class WallpaperService : IDisposable
     {
         // アクセス修飾子がprivateのstatic変数に生成したインスタンスを保存する
-        private static WallpaperService? singleInstance = null;
+        private static WallpaperService? _SingleInstance = null;
 
         private Timer _Timer = new Timer(30000);
         private CircularCounter? _CircularCounter;
@@ -38,11 +38,11 @@ namespace WallpaperChanger.Model
         // staticメソッドの場合
         public static WallpaperService GetInstance()
         {
-            if (singleInstance == null)
+            if (_SingleInstance is null)
             {
-                singleInstance = new WallpaperService();
+                _SingleInstance = new WallpaperService();
             }
-            return singleInstance;
+            return _SingleInstance;
         }
 
         public void Start()
