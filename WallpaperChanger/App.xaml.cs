@@ -11,12 +11,12 @@ namespace WallpaperChanger
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        private MainWindow? _win = null;  //２重起動防止用
+        private MainWindow? _Window = null;  //２重起動防止用
         //常駐終了時に開放するために保存しておく
-        private System.Windows.Forms.ContextMenuStrip? _menu = null;
+        private ContextMenuStrip? _Menu = null;
         //常駐終了時に開放するために保存しておく
-        private System.Windows.Forms.NotifyIcon? _notifyIcon = null;
-        private WallpaperService _service = WallpaperService.GetInstance();
+        private NotifyIcon? _NotifyIcon = null;
+        private WallpaperService _Service = WallpaperService.GetInstance();
         /// <summary>
         /// 常駐開始時の初期化処理
         /// </summary>
@@ -30,28 +30,35 @@ namespace WallpaperChanger
             var icon = GetResourceStream(new Uri("images_117786.ico", UriKind.Relative)).Stream;
 
             //コンテキストメニューを作成
-            _menu = CreateMenu();
+            _Menu = CreateMenu();
 
             //通知領域にアイコンを表示
 
-            _notifyIcon = new System.Windows.Forms.NotifyIcon
+            _NotifyIcon = new NotifyIcon
             {
                 Visible = true,
-                Icon = new System.Drawing.Icon(icon),
+                Icon = new Icon(icon),
                 Text = System.Diagnostics.Process.GetCurrentProcess().ProcessName,
-                ContextMenuStrip = _menu
+                ContextMenuStrip = _Menu
             };
 
             //アイコンがクリックされたら設定画面を表示
-            _notifyIcon.MouseClick += (s, er) =>
+            _NotifyIcon.MouseClick += (s, er) =>
             {
-                if (er.Button == System.Windows.Forms.MouseButtons.Left)
+                if (er.Button == MouseButtons.Left)
                 {
                     ShowMainWindow();
                 }
             };
 
-            _service.Start();
+            _Service.Path = new string[]
+            {
+                @"E:\画像\ブルーアーカイブ\生徒\ミカ\F2Vg_rhbkAEjr8x.jpg",
+                @"E:\画像\ブルーアーカイブ\生徒\ミカ\Fsi-cx5aIAEx0VM.jpg",
+                @"E:\画像\ブルーアーカイブ\生徒\ミカ\F2hFujebIAAYWUt.jpg"
+            };
+
+            _Service.Start();
         }
 
         /// <summary>
@@ -60,9 +67,9 @@ namespace WallpaperChanger
         /// <param name="e"></param>
         protected override void OnExit(ExitEventArgs e)
         {
-            _menu?.Dispose();
-            _notifyIcon?.Dispose();
-            _service.Dispose();
+            _Menu?.Dispose();
+            _NotifyIcon?.Dispose();
+            _Service.Dispose();
             base.OnExit(e);
         }
 
@@ -71,27 +78,27 @@ namespace WallpaperChanger
         /// </summary>
         private void ShowMainWindow()
         {
-            if (_win == null)
+            if (_Window == null)
             {
-                _win = new MainWindow();
+                _Window = new MainWindow();
 
                 //ウィンドウを画面中央に表示
-                _win.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                _Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
                 //Windowsを表示する
-                _win.Show();
+                _Window.Show();
 
                 //閉じるボタンが押された時のイベント処理を登録
-                _win.Closing += (s, e) =>
+                _Window.Closing += (s, e) =>
                 {
-                    _win.Hide();        //非表示にする
+                    _Window.Hide();        //非表示にする
                     e.Cancel = true;    //閉じるをキャンセルする
                 };
             }
             else
             {
                 //Windowsを表示する
-                _win.Show();
+                _Window.Show();
             }
         }
 
@@ -107,5 +114,4 @@ namespace WallpaperChanger
             return menu;
         }
     }
-
 }

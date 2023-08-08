@@ -15,11 +15,8 @@ namespace WallpaperChanger.Model
 
         private Timer _Timer = new Timer(30000);
         private CircularCounter? _CircularCounter;
-        private string[] _Path = new string[] {
-            @"E:\画像\ブルーアーカイブ\生徒\ミカ\F2Vg_rhbkAEjr8x.jpg"
-            , @"E:\画像\ブルーアーカイブ\生徒\ミカ\Fsi-cx5aIAEx0VM.jpg"
-            ,@"E:\画像\ブルーアーカイブ\生徒\ミカ\F2hFujebIAAYWUt.jpg"
-        };
+        public string[] Path { get; set; } = new string[0];
+
         private WallpaperService()
         {
         }
@@ -37,7 +34,7 @@ namespace WallpaperChanger.Model
 
         public void Start()
         {
-            _CircularCounter = new CircularCounter(_Path.Length);
+            _CircularCounter = new CircularCounter(Path.Length);
             // タイマーにイベントを登録
             _Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             _Timer.Start();
@@ -45,7 +42,7 @@ namespace WallpaperChanger.Model
 
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            var path = _Path[_CircularCounter!.GetCounter()];
+            var path = Path[_CircularCounter!.GetCounter()];
 
             WallPaper.Change(path);
         }
