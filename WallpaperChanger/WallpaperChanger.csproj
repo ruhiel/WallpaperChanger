@@ -13,6 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="3.0.0-alpha0457" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="ReactiveProperty" Version="9.3.0" />
+    <PackageReference Include="ReactiveProperty.WPF" Version="9.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="images_117786.ico" />
   </ItemGroup>
 

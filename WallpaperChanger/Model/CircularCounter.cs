@@ -13,7 +13,7 @@ namespace WallpaperChanger.Model
 
         public CircularCounter(int maxValue)
         {
-            if (maxValue <= 0)
+            if (maxValue < 0)
             {
                 throw new ArgumentException("The maximum value must be greater than zero.");
             }

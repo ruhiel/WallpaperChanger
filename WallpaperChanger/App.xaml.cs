@@ -51,13 +51,6 @@ namespace WallpaperChanger
                 }
             };
 
-            _Service.Path = new string[]
-            {
-                @"E:\画像\ブルーアーカイブ\生徒\ミカ\F2Vg_rhbkAEjr8x.jpg",
-                @"E:\画像\ブルーアーカイブ\生徒\ミカ\Fsi-cx5aIAEx0VM.jpg",
-                @"E:\画像\ブルーアーカイブ\生徒\ミカ\F2hFujebIAAYWUt.jpg"
-            };
-
             _Service.Start();
         }
 

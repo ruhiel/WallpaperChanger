@@ -14,24 +14,11 @@ namespace WallpaperChanger.Model
         private static WallpaperService? _SingleInstance = null;
 
         private Timer _Timer = new Timer(30000);
-        private CircularCounter? _CircularCounter;
-        public string[] _Path = new string[0];
+        private CircularCounter _CircularCounter = new CircularCounter(0);
+        private SettingController _SettingController = SettingController.GetInstance();
+
         private WallpaperService()
         {
-        }
-
-        public string[] Path 
-        {
-            get { return _Path; }
-            set
-            {
-                if (_CircularCounter is not null)
-                {
-                    _CircularCounter.MaxValue = value.Length;
-                }
-
-                _Path = value;
-            }
         }
 
         // インスタンスの取得はstaticプロパティもしくはstaticメソッドから行えるようにする
@@ -47,17 +34,33 @@ namespace WallpaperChanger.Model
 
         public void Start()
         {
-            _CircularCounter = new CircularCounter(Path.Length);
+            var setting = _SettingController.GetSetting();
+            _CircularCounter = new CircularCounter(setting.PathList.Count);
             // タイマーにイベントを登録
+            _Timer.Interval = setting.Interval;
             _Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             _Timer.Start();
         }
 
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)
         {
-            var path = Path[_CircularCounter!.GetCounter()];
+            var setting = _SettingController.GetSetting();
 
-            WallPaper.Change(path);
+            if(setting == null)
+            {
+                return;
+            }
+
+            _CircularCounter.MaxValue = setting.PathList.Count;
+
+            var pathList = setting.PathList;
+
+            if (pathList.Count > 0)
+            {
+                var path = pathList[_CircularCounter!.GetCounter()];
+
+                WallPaper.Change(path);
+            }
         }
 
         public void Stop()
