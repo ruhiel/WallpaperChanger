@@ -15,7 +15,7 @@ namespace WallpaperChanger.ViewModel
         public ReactiveCommand<DragEventArgs> DropCommand { get; } = new ReactiveCommand<DragEventArgs>();
         public ReactiveCommand<DragEventArgs> PreviewDragOverCommand { get; } = new ReactiveCommand<DragEventArgs>();
         public ObservableCollection<ImageModel> ImageList { get; set; } = new ObservableCollection<ImageModel>();
-
+        public ReactiveCommand DeleteImageCommand { get; } = new ReactiveCommand();
         public MainWindowViewModel()
         {
             DropCommand.Subscribe(e =>
@@ -34,6 +34,12 @@ namespace WallpaperChanger.ViewModel
             {
                 e.Effects = DragDropEffects.Copy;
                 e.Handled = e.Data.GetDataPresent(DataFormats.FileDrop);
+            });
+
+            DeleteImageCommand.Subscribe(e =>
+            {
+                var model = (ImageModel)e;
+                ImageList.Remove(model);
             });
         }
     }
