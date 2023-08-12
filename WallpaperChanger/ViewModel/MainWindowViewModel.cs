@@ -41,11 +41,11 @@ namespace WallpaperChanger.ViewModel
             DropCommand.Subscribe(e =>
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                
+                var setting = _SettingController.GetSetting();
 
-                foreach(var file in files)
+                foreach (var file in files)
                 {
-                    var setting = _SettingController.GetSetting();
-
                     if (setting.PathList.Contains(file))
                     {
                         continue;
