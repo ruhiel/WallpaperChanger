@@ -27,7 +27,7 @@ namespace WallpaperChanger
             base.OnStartup(e);
 
             //アイコンの取得
-            var icon = GetResourceStream(new Uri("images_117786.ico", UriKind.Relative)).Stream;
+            var icon = GetResourceStream(new Uri(@"Image\images_117786.ico", UriKind.Relative)).Stream;
 
             //コンテキストメニューを作成
             _Menu = CreateMenu();
