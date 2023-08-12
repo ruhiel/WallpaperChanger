@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="WallpaperChanger" Height="450" Width="800"
         TitleCharacterCasing="Normal">
     <mah:MetroWindow.DataContext>
         <vm:MainWindowViewModel>
