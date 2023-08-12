@@ -24,16 +24,28 @@ namespace WallpaperChanger.Model
             return _SingleInstance;
         }
 
-        public SettingModel? GetSetting()
+        public SettingModel GetSetting()
         {
             if (File.Exists(JsonPath))
             {
+                SettingModel? model;
                 using (StreamReader sr = new StreamReader(JsonPath))
                 {
                     // ファイルの内容を1つの文字列に読み込み
                     var jsonData = sr.ReadToEnd();
 
-                    return JsonConvert.DeserializeObject<SettingModel>(jsonData);
+                    model = JsonConvert.DeserializeObject<SettingModel>(jsonData);
+                }
+
+                if(model == null)
+                {
+                    model = new SettingModel();
+                    SaveSetting(model);
+                    return model;
+                }
+                else
+                {
+                    return model;
                 }
             }
             else

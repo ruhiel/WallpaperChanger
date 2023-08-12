@@ -46,11 +46,6 @@ namespace WallpaperChanger.Model
         {
             var setting = _SettingController.GetSetting();
 
-            if(setting == null)
-            {
-                return;
-            }
-
             _CircularCounter.MaxValue = setting.PathList.Count;
 
             var pathList = setting.PathList;
@@ -61,6 +56,8 @@ namespace WallpaperChanger.Model
 
                 WallPaper.Change(path);
             }
+
+            _Timer.Interval = setting.Interval;
         }
 
         public void Stop()
