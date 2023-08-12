@@ -26,7 +26,14 @@ namespace WallpaperChanger.ViewModel
         {
             var setting = _SettingController.GetSetting();
 
-            TimeSpan timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
+            var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
+
+            foreach(var path in setting.PathList)
+            {
+                var model = new ImageModel();
+                model.Source = ImageUtil.Convert(path);
+                ImageList.Add(model);
+            }
 
             Hour.Value = timeSpan.Hours;
             Minute.Value = timeSpan.Minutes;
@@ -76,6 +83,7 @@ namespace WallpaperChanger.ViewModel
 
             Interval.Subscribe(e =>
             {
+                WallpaperService.GetInstance().Interval = e;
                 var setting = _SettingController.GetSetting();
                 setting.Interval = e;
                 _SettingController.SaveSetting(setting);

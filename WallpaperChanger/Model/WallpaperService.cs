@@ -59,7 +59,13 @@ namespace WallpaperChanger.Model
 
             _Timer.Interval = setting.Interval;
         }
-
+        public double Interval
+        {
+            set
+            {
+                _Timer.Interval = value;
+            }
+        }
         public void Stop()
         {
             _Timer.Stop();
