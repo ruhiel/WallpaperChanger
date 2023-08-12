@@ -41,20 +41,27 @@ namespace WallpaperChanger.ViewModel
             DropCommand.Subscribe(e =>
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                var filePath = files[0];
 
-                var model = new ImageModel();
+                foreach(var file in files)
+                {
+                    var setting = _SettingController.GetSetting();
 
-                model.Source = ImageUtil.Convert(filePath);
+                    if (setting.PathList.Contains(file))
+                    {
+                        continue;
+                    }
 
-                ImageList.Add(model);
+                    setting.PathList.Add(file);
 
-                var setting = _SettingController.GetSetting();
 
-                setting.PathList.Add(filePath);
+                    var model = new ImageModel();
 
-                _SettingController.SaveSetting(setting);
+                    model.Source = ImageUtil.Convert(file);
 
+                    ImageList.Add(model);
+
+                    _SettingController.SaveSetting(setting);
+                }
             });
 
             PreviewDragOverCommand.Subscribe(e =>
