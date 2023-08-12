@@ -58,7 +58,7 @@ namespace WallpaperChanger.Model
 
         public void SaveSetting(SettingModel setting)
         {
-            var jsonData = JsonConvert.SerializeObject(setting);
+            var jsonData = JsonConvert.SerializeObject(setting, Formatting.Indented);
 
             using (StreamWriter sw = new StreamWriter(JsonPath))
             {
