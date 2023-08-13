@@ -1,7 +1,10 @@
-﻿using Reactive.Bindings;
+﻿using MahApps.Metro.Controls.Dialogs;
+using Microsoft.VisualBasic.Logging;
+using Reactive.Bindings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
@@ -19,13 +22,14 @@ namespace WallpaperChanger.ViewModel
         public ReactiveCommand<DragEventArgs> PreviewDragOverCommand { get; } = new ReactiveCommand<DragEventArgs>();
         public ObservableCollection<ImageModel> ImageList { get; set; } = new ObservableCollection<ImageModel>();
         public ReactiveCommand DeleteImageCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand OpenFileFolderCommand { get; } = new ReactiveCommand();
         public ReactiveProperty<int> Hour { get; } = new ReactiveProperty<int>();
         public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>();
         public ReadOnlyReactiveProperty<double> Interval { get; set; }
         public ReactiveProperty<bool> Shuffle { get; set; } = new ReactiveProperty<bool>();
         public ReactiveProperty<bool> StartUp { get; set; } = new ReactiveProperty<bool>();
         private SettingController _SettingController = SettingController.GetInstance();
-
+        public IDialogCoordinator? MahAppsDialogCoordinator { get; set; }
         public MainWindowViewModel()
         {
             var setting = _SettingController.GetSetting();
@@ -38,8 +42,7 @@ namespace WallpaperChanger.ViewModel
 
             foreach (var path in setting.PathList)
             {
-                var model = new ImageModel();
-                model.Source = ImageUtil.Convert(path);
+                var model = new ImageModel(ImageUtil.Convert(path) , path);
                 ImageList.Add(model);
             }
 
@@ -62,9 +65,7 @@ namespace WallpaperChanger.ViewModel
                     setting.PathList.Add(file);
 
 
-                    var model = new ImageModel();
-
-                    model.Source = ImageUtil.Convert(file);
+                    var model = new ImageModel(ImageUtil.Convert(file), file);
 
                     ImageList.Add(model);
 
@@ -78,7 +79,32 @@ namespace WallpaperChanger.ViewModel
                 e.Handled = e.Data.GetDataPresent(DataFormats.FileDrop);
             });
 
-            DeleteImageCommand.Subscribe(e =>
+            DeleteImageCommand.Subscribe(async e =>
+            {
+                var model = e as ImageModel;
+
+                if (model is null || MahAppsDialogCoordinator is null)
+                {
+                    return;
+                }
+
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "はい",
+                    NegativeButtonText = "いいえ",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme,
+                };
+
+                var diagResult = await MahAppsDialogCoordinator.ShowMessageAsync(this, "削除の確認", "壁紙一覧から削除します。よろしいですか？", MessageDialogStyle.AffirmativeAndNegative, settings: metroDialogSettings);
+                if (diagResult == MessageDialogResult.Affirmative)
+                {
+                    ImageList.Remove(model);
+                }
+            });
+
+            OpenFileFolderCommand.Subscribe(e =>
             {
                 var model = e as ImageModel;
 
@@ -87,7 +113,8 @@ namespace WallpaperChanger.ViewModel
                     return;
                 }
 
-                ImageList.Remove(model);
+                var path = Path.GetDirectoryName(model.FullPath);
+                Process.Start("explorer.exe", path);
             });
 
             Interval = Hour.CombineLatest(Minute, (hours, minutes) =>

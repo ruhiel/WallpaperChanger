@@ -17,5 +17,14 @@ namespace WallpaperChanger.Model
             get => _Source;
             set => SetProperty(ref _Source, value);
         }
+
+        public string FullPath { get; set; }
+
+        public ImageModel(BitmapImage? source, string fullPath)
+        {
+            Source = source;
+
+            FullPath = fullPath;
+        }
     }
 }

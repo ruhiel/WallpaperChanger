@@ -10,17 +10,22 @@
         xmlns:rp="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"
         mc:Ignorable="d"
         Title="WallpaperChanger" Height="450" Width="800"
-        TitleCharacterCasing="Normal">
+        TitleCharacterCasing="Normal"
+        xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+        Dialog:DialogParticipation.Register="{Binding}">
     <mah:MetroWindow.DataContext>
         <vm:MainWindowViewModel>
+            <vm:MainWindowViewModel.MahAppsDialogCoordinator>
+                <Dialog:DialogCoordinator/>
+            </vm:MainWindowViewModel.MahAppsDialogCoordinator>
         </vm:MainWindowViewModel>
     </mah:MetroWindow.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="140"/>
             <RowDefinition Height="9*"/>
         </Grid.RowDefinitions>
-        <WrapPanel Grid.Row="0">
+        <GroupBox Grid.Row="0" Header="オプション" Margin="5">
             <StackPanel Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                     <TextBlock Text="変更間隔：" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
@@ -38,40 +43,43 @@
                     <CheckBox  IsChecked="{Binding StartUp.Value}"/>
                 </StackPanel>
             </StackPanel>
-        </WrapPanel>
-        <ListView Grid.Row="1" ItemsSource="{Binding ImageList}" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AllowDrop="True">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="PreviewDragOver">
-                    <rp:EventToReactiveCommand Command="{Binding PreviewDragOverCommand}"/>
-                </i:EventTrigger>
-                <i:EventTrigger EventName="Drop">
-                    <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Width="300" Height="200">
-                        <Image Source="{Binding Source}"></Image>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="{x:Type ListViewItem}">
-                    <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListView}}" />
-                    <Setter Property="ContextMenu">
-                        <Setter.Value>
-                            <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                                <MenuItem Header="削除" Command="{Binding DeleteImageCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
-                            </ContextMenu>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Header="画像一覧" Margin="5">
+            <ListView ItemsSource="{Binding ImageList}" SelectionMode="Extended" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AllowDrop="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="PreviewDragOver">
+                        <rp:EventToReactiveCommand Command="{Binding PreviewDragOverCommand}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Drop">
+                        <rp:EventToReactiveCommand Command="{Binding DropCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Width="300" Height="200">
+                            <Image Source="{Binding Source}"></Image>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="Tag" Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListView}}" />
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Header="削除" Command="{Binding DeleteImageCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    <MenuItem Header="フォルダを開く" Command="{Binding OpenFileFolderCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+        </GroupBox>
     </Grid>
 </mah:MetroWindow>
