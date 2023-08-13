@@ -11,6 +11,8 @@
         mc:Ignorable="d"
         Title="WallpaperChanger" Height="450" Width="800"
         TitleCharacterCasing="Normal"
+        SaveWindowPosition="True"
+        ShowMinButton="False"
         xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
         Dialog:DialogParticipation.Register="{Binding}">
     <mah:MetroWindow.DataContext>
@@ -22,7 +24,7 @@
     </mah:MetroWindow.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
+            <RowDefinition Height="120"/>
             <RowDefinition Height="9*"/>
         </Grid.RowDefinitions>
         <GroupBox Grid.Row="0" Header="オプション" Margin="5">
@@ -35,12 +37,9 @@
                     <TextBlock Text="分" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,5,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                    <TextBlock Text="シャッフルする：" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <CheckBox  IsChecked="{Binding Shuffle.Value}"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                    <TextBlock Text="スタートアップに登録：" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <CheckBox  IsChecked="{Binding StartUp.Value}"/>
+                    <CheckBox  IsChecked="{Binding Shuffle.Value}" Content="シャッフルする" Margin="0,0,5,0"/>
+                    <CheckBox  IsChecked="{Binding StartUp.Value}" Content="スタートアップに登録" Margin="0,0,5,0"/>
+                    <Button Command="{Binding MySetSettingCommand}" Content="マイセット設定" Margin="0,0,5,0"/>
                 </StackPanel>
             </StackPanel>
         </GroupBox>

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using WallpaperChanger.Model;
+using WallpaperChanger.View;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WallpaperChanger.ViewModel
@@ -23,6 +24,7 @@ namespace WallpaperChanger.ViewModel
         public ObservableCollection<ImageModel> ImageList { get; set; } = new ObservableCollection<ImageModel>();
         public ReactiveCommand DeleteImageCommand { get; } = new ReactiveCommand();
         public ReactiveCommand OpenFileFolderCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand MySetSettingCommand { get; } = new ReactiveCommand();
         public ReactiveProperty<int> Hour { get; } = new ReactiveProperty<int>();
         public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>();
         public ReadOnlyReactiveProperty<double> Interval { get; set; }
@@ -118,6 +120,12 @@ namespace WallpaperChanger.ViewModel
                 {
                     Process.Start("explorer.exe", path);
                 }
+            });
+
+            MySetSettingCommand.Subscribe(e =>
+            {
+                var dialog = new MySetWindow();
+                dialog.ShowDialog();
             });
 
             Interval = Hour.CombineLatest(Minute, (hours, minutes) =>
