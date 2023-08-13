@@ -42,7 +42,7 @@ namespace WallpaperChanger.ViewModel
 
             foreach (var path in setting.PathList)
             {
-                var model = new ImageModel(ImageUtil.Convert(path) , path);
+                var model = new ImageModel(ImageUtil.Convert(path), path);
                 ImageList.Add(model);
             }
 
@@ -114,7 +114,10 @@ namespace WallpaperChanger.ViewModel
                 }
 
                 var path = Path.GetDirectoryName(model.FullPath);
-                Process.Start("explorer.exe", path);
+                if(path is not null)
+                {
+                    Process.Start("explorer.exe", path);
+                }
             });
 
             Interval = Hour.CombineLatest(Minute, (hours, minutes) =>
@@ -168,7 +171,18 @@ namespace WallpaperChanger.ViewModel
 
                 // WshShellを作成
                 var t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8"));
+
+                if (t is null)
+                {
+                    throw new Exception("WshShell作成に失敗");
+                }
+
                 dynamic? shell = Activator.CreateInstance(t);
+
+                if (shell is null)
+                {
+                    throw new Exception("WshShell作成に失敗");
+                }
 
                 // WshShortcutを作成
                 var shortcut = shell.CreateShortcut(shortcutPath);
@@ -186,7 +200,7 @@ namespace WallpaperChanger.ViewModel
                 System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
                 System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
             }
-            else if(!startUp && exists)
+            else if (!startUp && exists)
             {
                 File.Delete(shortcutPath);
             }
