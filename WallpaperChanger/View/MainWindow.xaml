@@ -17,8 +17,8 @@
     </mah:MetroWindow.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="8*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="9*"/>
         </Grid.RowDefinitions>
         <WrapPanel Grid.Row="0">
             <StackPanel Orientation="Vertical">
@@ -31,7 +31,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                     <TextBlock Text="シャッフルする：" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <CheckBox  IsChecked="{Binding Random.Value}"/>
+                    <CheckBox  IsChecked="{Binding Shuffle.Value}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
+                    <TextBlock Text="スタートアップに登録：" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <CheckBox  IsChecked="{Binding StartUp.Value}"/>
                 </StackPanel>
             </StackPanel>
         </WrapPanel>

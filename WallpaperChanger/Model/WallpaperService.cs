@@ -48,6 +48,8 @@ namespace WallpaperChanger.Model
 
             _CircularCounter.MaxValue = setting.PathList.Count;
 
+            _CircularCounter.Shuffle = setting.Shuffle;
+
             var pathList = setting.PathList;
 
             if (pathList.Count > 0)

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using WallpaperChanger.Model;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WallpaperChanger.ViewModel
 {
@@ -20,18 +21,22 @@ namespace WallpaperChanger.ViewModel
         public ReactiveCommand DeleteImageCommand { get; } = new ReactiveCommand();
         public ReactiveProperty<int> Hour { get; } = new ReactiveProperty<int>();
         public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>();
-        public ReadOnlyReactiveProperty<double> Interval { get; set; } 
+        public ReadOnlyReactiveProperty<double> Interval { get; set; }
+        public ReactiveProperty<bool> Shuffle { get; set; } = new ReactiveProperty<bool>();
+        public ReactiveProperty<bool> StartUp { get; set; } = new ReactiveProperty<bool>();
         private SettingController _SettingController = SettingController.GetInstance();
 
         public MainWindowViewModel()
         {
-            Create();
-
             var setting = _SettingController.GetSetting();
+
+            Shuffle.Value = setting.Shuffle;
+
+            StartUp.Value = setting.StartUp;
 
             var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
 
-            foreach(var path in setting.PathList)
+            foreach (var path in setting.PathList)
             {
                 var model = new ImageModel();
                 model.Source = ImageUtil.Convert(path);
@@ -44,7 +49,7 @@ namespace WallpaperChanger.ViewModel
             DropCommand.Subscribe(e =>
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                
+
                 var setting = _SettingController.GetSetting();
 
                 foreach (var file in files)
@@ -77,7 +82,7 @@ namespace WallpaperChanger.ViewModel
             {
                 var model = e as ImageModel;
 
-                if(model is null)
+                if (model is null)
                 {
                     return;
                 }
@@ -98,9 +103,25 @@ namespace WallpaperChanger.ViewModel
                 setting.Interval = e;
                 _SettingController.SaveSetting(setting);
             });
+
+            Shuffle.Subscribe(e =>
+            {
+                var setting = _SettingController.GetSetting();
+                setting.Shuffle = e;
+                _SettingController.SaveSetting(setting);
+            });
+
+            StartUp.Subscribe(e =>
+            {
+                StartUpSetting(e);
+                var setting = _SettingController.GetSetting();
+                setting.StartUp = e;
+                _SettingController.SaveSetting(setting);
+
+            });
         }
 
-        private void Create()
+        private void StartUpSetting(bool startUp)
         {
             var fullPath = System.Windows.Forms.Application.ExecutablePath;
 
@@ -111,28 +132,37 @@ namespace WallpaperChanger.ViewModel
                 Environment.GetFolderPath(Environment.SpecialFolder.Startup),
                 $"{fileName}.lnk");
 
-            //ショートカットのリンク先
-            var targetPath = fullPath ?? string.Empty;
+            var exists = File.Exists(shortcutPath);
 
-            //WshShellを作成
-            var t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8"));
-            dynamic? shell = Activator.CreateInstance(t);
+            if (startUp && !exists)
+            {
+                // ショートカットのリンク先
+                var targetPath = fullPath ?? string.Empty;
 
-            //WshShortcutを作成
-            var shortcut = shell.CreateShortcut(shortcutPath);
+                // WshShellを作成
+                var t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8"));
+                dynamic? shell = Activator.CreateInstance(t);
 
-            //リンク先
-            shortcut.TargetPath = targetPath;
-            //アイコンのパス
-            shortcut.IconLocation = fullPath + ",0";
-            //その他のプロパティも同様に設定できるため、省略
+                // WshShortcutを作成
+                var shortcut = shell.CreateShortcut(shortcutPath);
 
-            //ショートカットを作成
-            shortcut.Save();
+                // リンク先
+                shortcut.TargetPath = targetPath;
+                // アイコンのパス
+                shortcut.IconLocation = fullPath + ",0";
+                // その他のプロパティも同様に設定できるため、省略
 
-            //後始末
-            System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
-            System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
+                // ショートカットを作成
+                shortcut.Save();
+
+                // 後始末
+                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shortcut);
+                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(shell);
+            }
+            else if(!startUp && exists)
+            {
+                File.Delete(shortcutPath);
+            }
         }
     }
 

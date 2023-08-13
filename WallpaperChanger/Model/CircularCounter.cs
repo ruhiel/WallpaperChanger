@@ -9,8 +9,11 @@ namespace WallpaperChanger.Model
     public class CircularCounter
     {
         public int MaxValue { get; set; }
+        public bool Shuffle { get; set; }
+
         private int _CurrentValue;
 
+        private Random _Random = new Random();
         public CircularCounter(int maxValue)
         {
             if (maxValue < 0)
@@ -24,6 +27,11 @@ namespace WallpaperChanger.Model
 
         public int GetCounter()
         {
+            if (Shuffle)
+            {
+                return _Random.Next(0, MaxValue);
+            }
+
             int result = _CurrentValue;
             _CurrentValue = (_CurrentValue + 1) % MaxValue;
             return result;
