@@ -10,9 +10,14 @@
         xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         SaveWindowPosition="True"
-        Title="マイセット" Height="450" Width="800">
+        Title="マイセット" Height="450" Width="800"
+        xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+        Dialog:DialogParticipation.Register="{Binding}">
     <mah:MetroWindow.DataContext>
         <vm:MySetWindowViewModel>
+            <vm:MySetWindowViewModel.MahAppsDialogCoordinator>
+                <Dialog:DialogCoordinator/>
+            </vm:MySetWindowViewModel.MahAppsDialogCoordinator>
         </vm:MySetWindowViewModel>
     </mah:MetroWindow.DataContext>
     <Grid>
