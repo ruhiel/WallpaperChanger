@@ -30,10 +30,15 @@ namespace WallpaperChanger.ViewModel
         public ReadOnlyReactiveProperty<double> Interval { get; set; }
         public ReactiveProperty<bool> Shuffle { get; set; } = new ReactiveProperty<bool>();
         public ReactiveProperty<bool> StartUp { get; set; } = new ReactiveProperty<bool>();
-        private SettingController _SettingController = SettingController.GetInstance();
+        public ObservableCollection<string> MySetNameList { get; set; } = new ObservableCollection<string>();
+        public ReactiveProperty<string> SelectedMySet { get; } = new ReactiveProperty<string>();
+        public ReactiveCommand MySetApplyCommand { get; } = new ReactiveCommand();
         public IDialogCoordinator? MahAppsDialogCoordinator { get; set; }
+        private SettingController _SettingController = SettingController.GetInstance();
         public MainWindowViewModel()
         {
+            SetMySetNameList();
+
             var setting = _SettingController.GetSetting();
 
             Shuffle.Value = setting.Shuffle;
@@ -42,37 +47,20 @@ namespace WallpaperChanger.ViewModel
 
             var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
 
+            Hour.Value = timeSpan.Hours;
+            Minute.Value = timeSpan.Minutes;
+
             foreach (var path in setting.PathList)
             {
                 var model = new ImageModel(ImageUtil.Convert(path), path);
                 ImageList.Add(model);
             }
 
-            Hour.Value = timeSpan.Hours;
-            Minute.Value = timeSpan.Minutes;
-
             DropCommand.Subscribe(e =>
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
 
-                var setting = _SettingController.GetSetting();
-
-                foreach (var file in files)
-                {
-                    if (setting.PathList.Contains(file))
-                    {
-                        continue;
-                    }
-
-                    setting.PathList.Add(file);
-
-
-                    var model = new ImageModel(ImageUtil.Convert(file), file);
-
-                    ImageList.Add(model);
-
-                    _SettingController.SaveSetting(setting);
-                }
+                AddAll(files);
             });
 
             PreviewDragOverCommand.Subscribe(e =>
@@ -126,6 +114,8 @@ namespace WallpaperChanger.ViewModel
             {
                 var dialog = new MySetWindow();
                 dialog.ShowDialog();
+
+                SetMySetNameList();
             });
 
             Interval = Hour.CombineLatest(Minute, (hours, minutes) =>
@@ -155,8 +145,57 @@ namespace WallpaperChanger.ViewModel
                 var setting = _SettingController.GetSetting();
                 setting.StartUp = e;
                 _SettingController.SaveSetting(setting);
+            });
 
+            MySetApplyCommand.Subscribe(e =>
+            {
+                var setting = _SettingController.GetSetting();
+
+                if (!setting.MySet.ContainsKey(SelectedMySet.Value))
+                {
+                    return;
+                }
+
+                Clear();
+
+                AddAll(setting.MySet[SelectedMySet.Value]);
             });
         }
+        private void AddAll(IEnumerable<string> files)
+        {
+            var setting = _SettingController.GetSetting();
+
+            foreach (var file in files)
+            {
+                if (setting.PathList.Contains(file))
+                {
+                    continue;
+                }
+
+                setting.PathList.Add(file);
+
+                var model = new ImageModel(ImageUtil.Convert(file), file);
+
+                ImageList.Add(model);
+            }
+
+            _SettingController.SaveSetting(setting);
+        }
+
+        private void Clear()
+        {
+            var setting = _SettingController.GetSetting();
+            setting.PathList.Clear();
+            ImageList.Clear();
+            _SettingController.SaveSetting(setting);
+        }
+
+        private void SetMySetNameList()
+        {
+            var setting = _SettingController.GetSetting();
+
+            MySetNameList = new ObservableCollection<string>(setting.MySet.Select(x => x.Key));
+        }
     }
+
 }
