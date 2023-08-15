@@ -30,12 +30,14 @@ namespace WallpaperChanger.ViewModel
 
             MySetNameList = new ObservableCollection<string>(setting.MySet.Select(x => x.Key));
 
-            SelectedMySet.Subscribe(e =>
+            SelectedMySet.Subscribe(async e =>
             {
                 if (string.IsNullOrEmpty(e))
                 {
                     return;
                 }
+
+                var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", string.Empty);
 
                 var setting = _SettingController.GetSetting();
 
@@ -52,6 +54,8 @@ namespace WallpaperChanger.ViewModel
 
                     ImageList.Add(model);
                 }
+
+                await controller.CloseAsync();
             });
 
             AddMySetCommand.Subscribe(e =>

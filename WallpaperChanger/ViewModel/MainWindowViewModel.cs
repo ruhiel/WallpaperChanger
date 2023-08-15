@@ -26,7 +26,7 @@ namespace WallpaperChanger.ViewModel
         public ReactiveCommand OpenFileFolderCommand { get; } = new ReactiveCommand();
         public ReactiveCommand MySetSettingCommand { get; } = new ReactiveCommand();
         public ReactiveProperty<int> Hour { get; } = new ReactiveProperty<int>();
-        public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>();
+        public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>(1);
         public ReadOnlyReactiveProperty<double> Interval { get; set; }
         public ReactiveProperty<bool> Shuffle { get; set; } = new ReactiveProperty<bool>();
         public ReactiveProperty<bool> StartUp { get; set; } = new ReactiveProperty<bool>();
@@ -34,27 +34,35 @@ namespace WallpaperChanger.ViewModel
         public ReactiveProperty<string> SelectedMySet { get; } = new ReactiveProperty<string>();
         public ReactiveCommand MySetApplyCommand { get; } = new ReactiveCommand();
         public IDialogCoordinator? MahAppsDialogCoordinator { get; set; }
+        public AsyncReactiveCommand ViewLoaded { get; } = new AsyncReactiveCommand();
+
         private SettingController _SettingController = SettingController.GetInstance();
         public MainWindowViewModel()
         {
-            SetMySetNameList();
-
-            var setting = _SettingController.GetSetting();
-
-            Shuffle.Value = setting.Shuffle;
-
-            StartUp.Value = setting.StartUp;
-
-            var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
-
-            Hour.Value = timeSpan.Hours;
-            Minute.Value = timeSpan.Minutes;
-
-            foreach (var path in setting.PathList)
+            ViewLoaded.Subscribe(async e =>
             {
-                var model = new ImageModel(ImageUtil.Convert(path), path);
-                ImageList.Add(model);
-            }
+                var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", string.Empty);
+                SetMySetNameList();
+
+                var setting = _SettingController.GetSetting();
+
+                Shuffle.Value = setting.Shuffle;
+
+                StartUp.Value = setting.StartUp;
+
+                var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
+
+                Hour.Value = timeSpan.Hours;
+                Minute.Value = timeSpan.Minutes;
+
+                foreach (var path in setting.PathList)
+                {
+                    var model = new ImageModel(ImageUtil.Convert(path), path);
+                    ImageList.Add(model);
+                }
+
+                await controller.CloseAsync();
+            });
 
             DropCommand.Subscribe(e =>
             {
@@ -126,6 +134,10 @@ namespace WallpaperChanger.ViewModel
 
             Interval.Subscribe(e =>
             {
+                if (e <= 0)
+                {
+                    return;
+                }
                 WallpaperService.GetInstance().Interval = e;
                 var setting = _SettingController.GetSetting();
                 setting.Interval = e;
@@ -147,8 +159,10 @@ namespace WallpaperChanger.ViewModel
                 _SettingController.SaveSetting(setting);
             });
 
-            MySetApplyCommand.Subscribe(e =>
+            MySetApplyCommand.Subscribe(async e =>
             {
+                var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", string.Empty);
+
                 var setting = _SettingController.GetSetting();
 
                 if (!setting.MySet.ContainsKey(SelectedMySet.Value))
@@ -159,6 +173,8 @@ namespace WallpaperChanger.ViewModel
                 Clear();
 
                 AddAll(setting.MySet[SelectedMySet.Value]);
+
+                await controller.CloseAsync();
             });
         }
         private void AddAll(IEnumerable<string> files)

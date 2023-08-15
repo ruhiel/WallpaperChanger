@@ -65,6 +65,10 @@ namespace WallpaperChanger.Model
         {
             set
             {
+                if (value <= 0)
+                {
+                    return;
+                }
                 _Timer.Interval = value;
             }
         }

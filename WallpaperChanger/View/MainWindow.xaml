@@ -22,6 +22,11 @@
             </vm:MainWindowViewModel.MahAppsDialogCoordinator>
         </vm:MainWindowViewModel>
     </mah:MetroWindow.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <rp:EventToReactiveCommand Command="{Binding ViewLoaded}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="150"/>
