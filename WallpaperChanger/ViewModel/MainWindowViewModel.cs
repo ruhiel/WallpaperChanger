@@ -39,21 +39,23 @@ namespace WallpaperChanger.ViewModel
         private SettingController _SettingController = SettingController.GetInstance();
         public MainWindowViewModel()
         {
+            var setting = _SettingController.GetSetting();
+
+            Shuffle.Value = setting.Shuffle;
+
+            StartUp.Value = setting.StartUp;
+
+            var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
+
+            Hour.Value = timeSpan.Hours;
+            Minute.Value = timeSpan.Minutes;
+
             ViewLoaded.Subscribe(async e =>
             {
-                var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", string.Empty);
+                var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", "読み込み中");
                 SetMySetNameList();
 
                 var setting = _SettingController.GetSetting();
-
-                Shuffle.Value = setting.Shuffle;
-
-                StartUp.Value = setting.StartUp;
-
-                var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
-
-                Hour.Value = timeSpan.Hours;
-                Minute.Value = timeSpan.Minutes;
 
                 foreach (var path in setting.PathList)
                 {
