@@ -50,10 +50,11 @@ namespace WallpaperChanger.ViewModel
             Hour.Value = timeSpan.Hours;
             Minute.Value = timeSpan.Minutes;
 
+            SetMySetNameList();
+
             ViewLoaded.Subscribe(async e =>
             {
                 var controller = await MahAppsDialogCoordinator.ShowProgressAsync(this, "読み込み中", "読み込み中");
-                SetMySetNameList();
 
                 var setting = _SettingController.GetSetting();
 
