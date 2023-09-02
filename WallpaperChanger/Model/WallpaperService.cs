@@ -19,6 +19,11 @@ namespace WallpaperChanger.Model
 
         private WallpaperService()
         {
+            var setting = _SettingController.GetSetting();
+            _CircularCounter = new CircularCounter(setting.PathList.Count);
+            // タイマーにイベントを登録
+            _Timer.Interval = setting.Interval;
+            _Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
         }
 
         // インスタンスの取得はstaticプロパティもしくはstaticメソッドから行えるようにする
@@ -32,14 +37,12 @@ namespace WallpaperChanger.Model
             return _SingleInstance;
         }
 
-        public void Start()
+        public bool Enabled
         {
-            var setting = _SettingController.GetSetting();
-            _CircularCounter = new CircularCounter(setting.PathList.Count);
-            // タイマーにイベントを登録
-            _Timer.Interval = setting.Interval;
-            _Timer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            _Timer.Start();
+            set
+            {
+                _Timer.Enabled = value;
+            }
         }
 
         private void OnTimedEvent(object? sender, ElapsedEventArgs e)

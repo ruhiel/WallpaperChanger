@@ -50,8 +50,6 @@ namespace WallpaperChanger
                     ShowMainWindow();
                 }
             };
-
-            _Service.Start();
         }
 
         /// <summary>

@@ -16,6 +16,8 @@ namespace WallpaperChanger.Model
 
         public bool StartUp { get; set; } = false;
 
+        public bool ServiceEnable { get; set; } = false;
+
         public Dictionary<string, List<string>> MySet { get; set; } = new Dictionary<string, List<string>>();
     }
 }

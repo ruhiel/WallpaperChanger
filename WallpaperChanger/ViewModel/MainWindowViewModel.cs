@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
 using WallpaperChanger.Model;
 using WallpaperChanger.View;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -24,12 +25,14 @@ namespace WallpaperChanger.ViewModel
         public ObservableCollection<ImageModel> ImageList { get; set; } = new ObservableCollection<ImageModel>();
         public ReactiveCommand DeleteImageCommand { get; } = new ReactiveCommand();
         public ReactiveCommand OpenFileFolderCommand { get; } = new ReactiveCommand();
+        public ReactiveCommand WallPaperChangeCommand { get; } = new ReactiveCommand();
         public ReactiveCommand MySetSettingCommand { get; } = new ReactiveCommand();
         public ReactiveProperty<int> Hour { get; } = new ReactiveProperty<int>();
         public ReactiveProperty<int> Minute { get; } = new ReactiveProperty<int>(1);
         public ReadOnlyReactiveProperty<double> Interval { get; set; }
         public ReactiveProperty<bool> Shuffle { get; set; } = new ReactiveProperty<bool>();
         public ReactiveProperty<bool> StartUp { get; set; } = new ReactiveProperty<bool>();
+        public ReactiveProperty<bool> ServiceEnable { get; set; } = new ReactiveProperty<bool>();
         public ObservableCollection<string> MySetNameList { get; set; } = new ObservableCollection<string>();
         public ReactiveProperty<string> SelectedMySet { get; } = new ReactiveProperty<string>();
         public ReactiveCommand MySetApplyCommand { get; } = new ReactiveCommand();
@@ -44,6 +47,10 @@ namespace WallpaperChanger.ViewModel
             Shuffle.Value = setting.Shuffle;
 
             StartUp.Value = setting.StartUp;
+
+            ServiceEnable.Value = setting.ServiceEnable;
+
+            WallpaperService.GetInstance().Enabled = setting.ServiceEnable;
 
             var timeSpan = TimeSpan.FromMilliseconds(setting.Interval);
 
@@ -114,11 +121,31 @@ namespace WallpaperChanger.ViewModel
                     return;
                 }
 
-                var path = Path.GetDirectoryName(model.FullPath);
+                var path = System.IO.Path.GetDirectoryName(model.FullPath);
+
                 if (path is not null)
                 {
                     Process.Start("explorer.exe", path);
                 }
+            });
+
+            WallPaperChangeCommand.Subscribe(e =>
+            {
+                var model = e as ImageModel;
+
+                if (model is null)
+                {
+                    return;
+                }
+
+                var path = model.FullPath;
+
+                if (path is null)
+                {
+                    return;
+                }
+
+                WallPaper.Change(path);
             });
 
             MySetSettingCommand.Subscribe(e =>
@@ -159,6 +186,15 @@ namespace WallpaperChanger.ViewModel
                 StartUpUtil.Setting(e);
                 var setting = _SettingController.GetSetting();
                 setting.StartUp = e;
+                _SettingController.SaveSetting(setting);
+            });
+
+            ServiceEnable.Subscribe(e =>
+            {
+                StartUpUtil.Setting(e);
+                var setting = _SettingController.GetSetting();
+                setting.ServiceEnable = e;
+                WallpaperService.GetInstance().Enabled = e;
                 _SettingController.SaveSetting(setting);
             });
 

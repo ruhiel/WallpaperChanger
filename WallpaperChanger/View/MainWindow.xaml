@@ -42,8 +42,9 @@
                     <TextBlock Text="分" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,5,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
-                    <CheckBox  IsChecked="{Binding Shuffle.Value}" Content="シャッフルする" Margin="0,0,5,0"/>
-                    <CheckBox  IsChecked="{Binding StartUp.Value}" Content="スタートアップに登録" Margin="0,0,5,0"/>
+                    <CheckBox IsChecked="{Binding Shuffle.Value}" Content="シャッフルする" Margin="0,0,5,0"/>
+                    <CheckBox IsChecked="{Binding StartUp.Value}" Content="スタートアップに登録" Margin="0,0,5,0"/>
+                    <CheckBox IsChecked="{Binding ServiceEnable.Value}" Content="サービス起動" Margin="0,0,5,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,5,0,5">
                     <Button Command="{Binding MySetSettingCommand}" Content="マイセット設定" Margin="0,0,5,0"/>
@@ -80,8 +81,9 @@
                         <Setter Property="ContextMenu">
                             <Setter.Value>
                                 <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
-                                    <MenuItem Header="削除" Command="{Binding DeleteImageCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    <MenuItem Header="壁紙として設定" Command="{Binding WallPaperChangeCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                     <MenuItem Header="フォルダを開く" Command="{Binding OpenFileFolderCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                    <MenuItem Header="削除" Command="{Binding DeleteImageCommand}" CommandParameter="{Binding PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                 </ContextMenu>
                             </Setter.Value>
                         </Setter>
