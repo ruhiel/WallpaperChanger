@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -19,6 +20,28 @@ namespace WallpaperChanger.Model
         }
 
         public string FullPath { get; set; }
+
+        public string FileName
+        {
+            get
+            {
+                return string.IsNullOrEmpty(FullPath) ? string.Empty : Path.GetFileName(FullPath);
+            }
+        }
+
+        public string LastWriteTime
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(FullPath))
+                {
+                    return string.Empty;
+                }
+                
+                var dt = File.GetLastWriteTime(FullPath);
+                return dt.ToString("yyyy/MM/dd HH:mm:ss");
+            }
+        }
 
         public ImageModel(BitmapImage? source, string fullPath)
         {
